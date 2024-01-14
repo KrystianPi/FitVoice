@@ -74,7 +74,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func sendButtonTapped(_ sender: UIButton) {
-        sendTranscribedTextToAPI(recordedText: transcriptionTextView.text)
+        sendTranscribedTextToAPI(recordedText: currentTranscribedText)
     }
     
     private func sendTranscribedTextToAPI(recordedText: String) {
@@ -87,6 +87,7 @@ class ViewController: UIViewController {
     private let audioEngine = AVAudioEngine()
     private var waveformView: WaveformView!
     private var timer: Timer?
+    private var currentTranscribedText = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -166,10 +167,13 @@ class ViewController: UIViewController {
         recognitionTask = speechRecognizer?.recognitionTask(with: recognitionRequest!) { result, error in
             if let result = result {
                 let transcribedText = result.bestTranscription.formattedString
+                self.currentTranscribedText = transcribedText
                 DispatchQueue.main.async {
                     self.transcriptionTextView.text = transcribedText
                 }
             }
+
+            // Only stop the audio engine and cleanup if there's an error or it's the final result
             if error != nil || result?.isFinal == true {
                 self.audioEngine.stop()
                 inputNode.removeTap(onBus: 0)
