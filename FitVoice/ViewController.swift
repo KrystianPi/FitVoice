@@ -167,9 +167,15 @@ class ViewController: UIViewController {
         recognitionTask = speechRecognizer?.recognitionTask(with: recognitionRequest!) { result, error in
             if let result = result {
                 let transcribedText = result.bestTranscription.formattedString
-                self.currentTranscribedText = transcribedText
-                DispatchQueue.main.async {
-                    self.transcriptionTextView.text = transcribedText
+                
+                // Check if the transcribed text is not empty before updating
+                if !transcribedText.isEmpty {
+                    self.currentTranscribedText = transcribedText
+                    DispatchQueue.main.async {
+                        self.transcriptionTextView.text = transcribedText
+                        print("text: \(self.transcriptionTextView.text)")
+                        print("text1: \(self.currentTranscribedText)")
+                    }
                 }
             }
 
